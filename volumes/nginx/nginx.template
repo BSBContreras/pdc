@@ -1,0 +1,119 @@
+upstream vgimws {
+	server 127.0.0.1:8888;
+}
+
+upstream geoserver {
+	least_conn;
+	server 127.0.0.1:8081;
+}
+
+upstream geocoding {
+	server 127.0.0.1:3000;
+}
+
+upstream portainer {
+	server 127.0.0.1:9001;
+}
+
+upstream edit {
+	server 127.0.0.1:8000;
+}
+
+upstream tomcat {
+    server 127.0.0.1:8080;
+}
+
+server {
+	listen 80;
+
+	client_max_body_size 50M;
+	root /var/www/html;
+	index index.php index.html index.htm doku.php;
+	server_name pauliceia.dpi.inpe.br www.pauliceia.dpi.inpe.br;
+	charset  utf-8;
+
+	location /edit {
+		try_files $uri $uri/ /index.php?q=$uri&$args;
+	}
+
+	location /portal {
+		try_files $uri @portal;
+	}
+
+	##internal services
+	location /geoserver {
+		proxy_pass http://geoserver;
+		include /etc/nginx/proxy_params;
+	}
+
+	location /api/geocoding {
+		proxy_pass http://geocoding;
+	}
+
+	location /api/vgi/ {
+		proxy_set_header        Host            $host;
+		proxy_set_header        X-Real-IP       $remote_addr;
+		proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_pass http://vgimws/;
+	}
+
+	location /docker/server/ {
+		proxy_pass http://portainer/;
+                include /etc/nginx/proxy_params;
+	}
+
+    location /tomcat/ {
+            proxy_pass http://tomcat/;
+            include /etc/nginx/proxy_params;
+    }
+
+    location /prj2epsg {
+            proxy_pass http://tomcat/prj2epsg;
+            include /etc/nginx/proxy_params;
+    }
+
+	location @portal {
+            rewrite ^.*$ /portal/index.html last;
+    }
+
+	location ~ \.php$ {
+		try_files $uri =404;
+		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		fastcgi_pass php;
+		fastcgi_index index.php;
+		include fastcgi_params;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		fastcgi_param PATH_INFO $fastcgi_path_info;
+	}
+
+	## REDIRECTS
+	location /wiki {
+        return 301 http://www.dpi.inpe.br/pauliceia/;
+    }
+
+	location /github {
+        return 301 https://github.com/Pauliceia;
+    }
+
+	location /google49d25117bc3694e5.html {
+        try_files $uri /google49d25117bc3694e5.html;
+    }
+
+    location /sitemap.xml {
+        try_files $uri /sitemap.xml;
+    }
+
+    location /robots.txt {
+        try_files $uri /robots.txt;
+    }
+
+    location / {
+        return 301 http://www.pauliceia.dpi.inpe.br/portal/home;
+    }
+
+	#location / {
+    #        rewrite ^/ http://www.pauliceia.dpi.inpe.br/portal permanent;
+    #}
+
+	#rewrite ^/$ http://www.pauliceia.dpi.inpe.br/portal permanent;
+}
