@@ -2,6 +2,8 @@
 env_files/*
 
 volumes/geoserver/*
+
+volumes/nginx/nginx.template.*
 volumes/nginx/trash/*
 
 trash/*
