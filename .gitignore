@@ -2,4 +2,9 @@
 env_files/*
 !env_files/*.EXAMPLE
 
+# ignore specific volumes
+volumes/pgadmin4
+volumes/postgresql
+
+# unnecessary files
 .trash
