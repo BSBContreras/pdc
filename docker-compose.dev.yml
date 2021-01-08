@@ -18,7 +18,24 @@ services:
 
   # pauliceia services - 300x
 
-  # database - 400x
+  pauliceia_vgimws:
+    container_name: pauliceia_vgimws
+    image: pauliceia/api-vgiws:0.0.7
+    # command: python -u main.py
+    command: python -u main.py --debug=True --publish_layers_in_geoserver=False
+    # restart: always
+    volumes:
+      - ../vgiws:/usr/src/vgiws
+    # env_file:
+    #   - ./env_files/vgimws.env
+    depends_on:
+      - pauliceia_pgadmin4
+    networks:
+      - pauliceia
+    ports:
+      - 3001:8888
+
+  # pauliceia database - 400x
 
   pauliceia_pgadmin4:
     container_name: pauliceia_pgadmin4
@@ -48,6 +65,23 @@ services:
       - pauliceia
     # ports:
     #   - 4001:5432
+
+  # extra services - 900x
+
+  pauliceia_portainer:
+    container_name: pauliceia_portainer
+    image: portainer/portainer:1.24.1-alpine
+    # restart: always
+    volumes:
+      - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - pauliceia
+    ports:
+      - 9000:9000
+
+volumes:
+  portainer_data:
 
 networks:
   pauliceia:
