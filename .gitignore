@@ -1,12 +1,5 @@
-# exclude all files from folders
-env_files/*
-
-volumes/geoserver/*
-
-volumes/nginx/nginx.template.*
-volumes/nginx/trash/*
-
-trash/*
-
-# just include the '.EXAMPLE' files inside 'env' folder
+# exclude all files, but just include the '.EXAMPLE' files inside 'env' folder
+env_files
 !env_files/*.EXAMPLE
+
+.trash
