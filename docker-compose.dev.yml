@@ -1,0 +1,18 @@
+version: '3.9'
+
+services:
+  pauliceia_nginx:
+    container_name: pauliceia_nginx
+    image: nginx:1.18.0
+    # volumes:
+    #   - ./templates:/etc/nginx/templates
+    env_file:
+      - ./env_files/nginx.env
+    networks:
+      - pauliceia
+    ports:
+      - 8080:80
+
+networks:
+  pauliceia:
+    driver: bridge
