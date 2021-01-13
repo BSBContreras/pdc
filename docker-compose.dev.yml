@@ -1,7 +1,9 @@
 version: '3.9'
 
 services:
+  ##################################################
   # reverse proxy
+  ##################################################
 
   pauliceia_nginx:
     container_name: pauliceia_nginx
@@ -12,8 +14,6 @@ services:
     volumes:
       - ./volumes/nginx/default.conf.template:/etc/nginx/templates/default.conf.template
       - ./volumes/nginx/include:/etc/nginx/conf.d/include
-    # volumes:
-    #   - ./templates:/etc/nginx/templates
     networks:
       - pauliceia
     depends_on:
@@ -22,7 +22,9 @@ services:
     ports:
       - 8080:80
 
+  ##################################################
   # pauliceia services - 300x
+  ##################################################
 
   pauliceia_vgimws:
     container_name: pauliceia_vgimws
@@ -41,7 +43,9 @@ services:
     ports:
       - 3001:8888
 
+  ##################################################
   # pauliceia database - 400x
+  ##################################################
 
   pauliceia_pgadmin4:
     container_name: pauliceia_pgadmin4
@@ -72,7 +76,9 @@ services:
     # ports:
     #   - 4001:5432
 
+  ##################################################
   # extra services - 900x
+  ##################################################
 
   pauliceia_portainer:
     container_name: pauliceia_portainer
@@ -85,6 +91,7 @@ services:
       - pauliceia
     ports:
       - 9000:9000
+
 
 volumes:
   portainer_data:
