@@ -1,0 +1,14 @@
+# include upstreams
+include /etc/nginx/conf.d/include/upstream.conf;
+
+server {
+    listen          ${NGINX_PORT};
+    listen          [::]:${NGINX_PORT};
+    server_name     ${NGINX_HOST};
+
+    charset         utf-8;
+    # access_log      /var/log/nginx/host.access.log  main;
+
+    # include locations
+    include /etc/nginx/conf.d/include/location.conf;
+}
