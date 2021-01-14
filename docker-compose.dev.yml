@@ -80,8 +80,7 @@ services:
 
   pauliceia_postgis:
     container_name: pauliceia_postgis
-    # image: kartoza/postgis:11.0-2.5
-    image: kartoza/postgis:13.0
+    image: kartoza/postgis:11.0-2.5
     # restart: always
     env_file:
       - ./env_files/postgis.env
