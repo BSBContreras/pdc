@@ -7,7 +7,7 @@ services:
 
   pauliceia_nginx:
     container_name: pauliceia_nginx
-    image: nginx:1.19.5
+    image: nginx:1.21.1
     restart: on-failure
     env_file:
       - ./env_files/nginx.env
@@ -17,8 +17,7 @@ services:
     networks:
       - pauliceia
     depends_on:
-      - pauliceia_vgimws
-      - pauliceia_geocoding
+      - pauliceia_portal
       - pauliceia_portainer
     ports:
       - 8080:80
@@ -38,9 +37,9 @@ services:
       # overwritten by the mounting above at runtime.
       # Source: https://mherman.org/blog/dockerizing-a-vue-app/
       - '/app/node_modules'
-    # depends_on:
-    #   - pauliceia_vgimws
-    #   - pauliceia_geocoding
+    depends_on:
+      - pauliceia_vgimws
+      - pauliceia_geocoding
     networks:
       - pauliceia
     ports:
@@ -71,6 +70,9 @@ services:
       - ../GeocodingAPI:/usr/src/geocoding
     env_file:
       - ./env_files/geocoding.env
+    environment:
+      - HOST=localhost
+      - PORT=3000
     depends_on:
       - pauliceia_pgadmin4
     networks:
@@ -116,15 +118,16 @@ services:
 
   pauliceia_portainer:
     container_name: pauliceia_portainer
-    image: portainer/portainer:1.24.1-alpine
+    image: portainer/portainer-ce:2.6.3
     restart: on-failure
     volumes:
-      - portainer_data:/data
+      - portainer_data:/data portainer/portainer-ce
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - pauliceia
     ports:
       - 9000:9000
+      - 9001:8000
 
 volumes:
   portainer_data:
