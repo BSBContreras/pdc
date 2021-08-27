@@ -8,7 +8,7 @@ services:
   pauliceia_nginx:
     container_name: pauliceia_nginx
     image: nginx:1.19.5
-    # restart: always
+    restart: on-failure
     env_file:
       - ./env_files/nginx.env
     volumes:
@@ -27,12 +27,31 @@ services:
   # pauliceia services - 300x
   ##################################################
 
+  pauliceia_portal:
+    container_name: pauliceia_portal
+    image: pauliceia_portal
+    restart: on-failure
+    volumes:
+      - ../pauliceia:/app
+      - ./volumes/pauliceia/dev.env.js:/app/config/dev.env.js
+      # below is an anonymous volume. it avoids node_modules directory be
+      # overwritten by the mounting above at runtime.
+      # Source: https://mherman.org/blog/dockerizing-a-vue-app/
+      - '/app/node_modules'
+    # depends_on:
+    #   - pauliceia_vgimws
+    #   - pauliceia_geocoding
+    networks:
+      - pauliceia
+    ports:
+      - 3000:8080
+
   pauliceia_vgimws:
     container_name: pauliceia_vgimws
     image: pauliceia/api-vgiws:0.0.7
+    restart: on-failure
     # command: python -u main.py
     command: python -u main.py --debug=True --publish_layers_in_geoserver=False
-    # restart: always
     # env_file:
     #   - ./env_files/vgimws.env
     volumes:
@@ -47,7 +66,7 @@ services:
   pauliceia_geocoding:
     container_name: pauliceia_geocoding
     image: pauliceia/api-geocoding
-    # restart: always
+    restart: on-failure
     volumes:
       - ../GeocodingAPI:/usr/src/geocoding
     env_file:
@@ -63,10 +82,23 @@ services:
   # pauliceia database - 400x
   ##################################################
 
+  pauliceia_postgis:
+    container_name: pauliceia_postgis
+    image: kartoza/postgis:11.0-2.5
+    restart: on-failure
+    env_file:
+      - ./env_files/postgis.env
+    volumes:
+      - ./volumes/postgresql:/var/lib/postgresql
+    networks:
+      - pauliceia
+    ports:
+      - 4000:5432
+
   pauliceia_pgadmin4:
     container_name: pauliceia_pgadmin4
     image: dpage/pgadmin4:4.15
-    # restart: always
+    restart: on-failure
     env_file:
       - ./env_files/pgadmin4.env
     volumes:
@@ -76,20 +108,7 @@ services:
     depends_on:
       - pauliceia_postgis
     ports:
-      - 4000:80
-
-  pauliceia_postgis:
-    container_name: pauliceia_postgis
-    image: kartoza/postgis:11.0-2.5
-    # restart: always
-    env_file:
-      - ./env_files/postgis.env
-    volumes:
-      - ./volumes/postgresql:/var/lib/postgresql
-    networks:
-      - pauliceia
-    # ports:
-    #   - 4001:5432
+      - 4001:80
 
   ##################################################
   # extra services - 900x
@@ -98,7 +117,7 @@ services:
   pauliceia_portainer:
     container_name: pauliceia_portainer
     image: portainer/portainer:1.24.1-alpine
-    # restart: always
+    restart: on-failure
     volumes:
       - portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
@@ -106,7 +125,6 @@ services:
       - pauliceia
     ports:
       - 9000:9000
-
 
 volumes:
   portainer_data:
