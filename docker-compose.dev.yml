@@ -40,6 +40,7 @@ services:
     depends_on:
       - pauliceia_vgimws
       - pauliceia_geocoding
+      - pauliceia_geoserver
     networks:
       - pauliceia
     ports:
@@ -81,7 +82,33 @@ services:
       - 3002:3000
 
   ##################################################
-  # pauliceia database - 400x
+  # third party services - 400x
+  ##################################################
+
+  pauliceia_geoserver:
+    container_name: pauliceia_geoserver
+    image: kartoza/geoserver:2.19.2
+    restart: on-failure
+    volumes:
+      - ./volumes/geoserver/geoserverdata:/opt/geoserver/data_dir
+      # folder where raster files are
+      - ${GEOSERVER_FILES_DIR}:/home/geoserveruser/files
+    env_file:
+      - ./env_files/geoserver.env
+    networks:
+      - pauliceia
+    depends_on:
+      - pauliceia_pgadmin4
+    ports:
+      - 4000:8080
+    healthcheck:
+      test: curl --fail -s http://localhost:8080/ || exit 1
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+
+  ##################################################
+  # pauliceia database - 500x
   ##################################################
 
   pauliceia_postgis:
@@ -95,7 +122,9 @@ services:
     networks:
       - pauliceia
     ports:
-      - 4000:5432
+      - 5000:5432
+    healthcheck:
+        test: "exit 0"
 
   pauliceia_pgadmin4:
     container_name: pauliceia_pgadmin4
@@ -110,7 +139,7 @@ services:
     depends_on:
       - pauliceia_postgis
     ports:
-      - 4001:80
+      - 5001:80
 
   ##################################################
   # extra services - 900x
@@ -121,7 +150,7 @@ services:
     image: portainer/portainer-ce:2.6.3
     restart: on-failure
     volumes:
-      - portainer_data:/data portainer/portainer-ce
+      - portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - pauliceia
