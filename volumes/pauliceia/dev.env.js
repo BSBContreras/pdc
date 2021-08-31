@@ -8,8 +8,9 @@ module.exports = merge(prodEnv, {
   // urlVGI: '"http://www.pauliceia.dpi.inpe.br/api/vgi"',
   urlGeocoding: '"http://localhost:8080/api/geocoding"',
   // urlGeocoding: '"http://www.pauliceia.dpi.inpe.br/api/geocoding"',
-  // urlGeoserverPauliceia: '"http://localhost:9021/geoserver/pauliceia"',
-  urlGeoserverPauliceia: '"http://www.pauliceia.dpi.inpe.br/geoserver/pauliceia"',
-  urlGeoserveOther: '"http://www.pauliceia.dpi.inpe.br/geoserver/other"',
+  urlGeoserverPauliceia: '"http://localhost:8080/geoserver/pauliceia"',
+  // urlGeoserverPauliceia: '"http://www.pauliceia.dpi.inpe.br/geoserver/pauliceia"',
+  urlGeoserveOther: '"http://localhost:8080/geoserver/other"',
+  // urlGeoserveOther: '"http://www.pauliceia.dpi.inpe.br/geoserver/other"',
   keyCripto: '"keytest"'
 })

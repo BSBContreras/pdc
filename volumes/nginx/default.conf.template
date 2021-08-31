@@ -2,12 +2,23 @@
 include /etc/nginx/conf.d/include/upstream.conf;
 
 server {
-    listen          ${NGINX_PORT};
-    listen          [::]:${NGINX_PORT};
-    server_name     ${NGINX_HOST};
+    listen                ${NGINX_PORT};
+    listen                [::]:${NGINX_PORT};
+    server_name           ${NGINX_HOST};
 
-    charset         utf-8;
-    # access_log      /var/log/nginx/host.access.log  main;
+    charset               utf-8;
+    # access_log            /var/log/nginx/host.access.log  main;
+
+    # max upload size. the values come from the following link:
+    # https://github.com/kartoza/docker-geoserver/blob/master/sites-enabled/nginx.conf
+    # keepalive_timeout      500;
+    # proxy_connect_timeout  600;
+    # proxy_send_timeout     600;
+    # send_timeout           600;
+    # client_max_body_size   5000;
+    # client_header_timeout  600;
+    # client_body_timeout    600;
+    # fastcgi_read_timeout   300;
 
     # include locations
     include /etc/nginx/conf.d/include/location.conf;
