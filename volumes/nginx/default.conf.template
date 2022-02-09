@@ -9,6 +9,9 @@ server {
     charset               utf-8;
     # access_log            /var/log/nginx/host.access.log  main;
 
+    # max upload size to portal
+    client_max_body_size  50M;
+
     # max upload size. the values come from the following link:
     # https://github.com/kartoza/docker-geoserver/blob/master/sites-enabled/nginx.conf
     # keepalive_timeout      500;
