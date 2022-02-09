@@ -8,7 +8,7 @@ services:
   pauliceia_nginx:
     container_name: pauliceia_nginx
     image: nginx:1.21.1
-    restart: on-failure
+    # restart: on-failure
     env_file:
       - ./env_files/nginx.env
     volumes:
@@ -29,7 +29,7 @@ services:
   pauliceia_portal:
     container_name: pauliceia_portal
     image: pauliceia_portal
-    restart: on-failure
+    # restart: on-failure
     volumes:
       - ../pauliceia:/app
       - ./volumes/pauliceia/dev.env.js:/app/config/dev.env.js
@@ -39,7 +39,7 @@ services:
       - '/app/node_modules'
     depends_on:
       - pauliceia_vgimws
-      - pauliceia_geocoding
+      # - pauliceia_geocoding
       - pauliceia_geoserver
     networks:
       - pauliceia
@@ -49,46 +49,62 @@ services:
   pauliceia_vgimws:
     container_name: pauliceia_vgimws
     image: pauliceia/api-vgiws:0.0.7
-    restart: on-failure
-    # command: python -u main.py
+    # restart: on-failure
+    # command: python -u main.py --debug=True
     command: python -u main.py --debug=True --publish_layers_in_geoserver=False
     # env_file:
     #   - ./env_files/vgimws.env
     volumes:
       - ../vgiws:/usr/src/vgiws
     depends_on:
-      - pauliceia_pgadmin4
+      - pauliceia_postgis
+      # - pauliceia_geoserver_rest
     networks:
       - pauliceia
     ports:
       - 3001:8888
 
-  pauliceia_geocoding:
-    container_name: pauliceia_geocoding
-    image: pauliceia/api-geocoding
-    restart: on-failure
-    volumes:
-      - ../GeocodingAPI:/usr/src/geocoding
-    env_file:
-      - ./env_files/geocoding.env
-    environment:
-      - HOST=localhost
-      - PORT=3000
-    depends_on:
-      - pauliceia_pgadmin4
-    networks:
-      - pauliceia
-    ports:
-      - 3002:3000
+  # pauliceia_geocoding:
+  #   container_name: pauliceia_geocoding
+  #   image: pauliceia/api-geocoding
+  #   # restart: on-failure
+  #   env_file:
+  #     - ./env_files/geocoding.env
+  #   volumes:
+  #     - ../GeocodingAPI:/usr/src/geocoding
+  #   environment:
+  #     - HOST=localhost
+  #     - PORT=3000
+  #   depends_on:
+  #     - pauliceia_postgis
+  #   networks:
+  #     - pauliceia
+  #   ports:
+  #     - 3002:3000
+
+  # pauliceia_geoserver_rest:
+  #   container_name: pauliceia_geoserver_rest
+  #   image: pauliceia/api-geoserver
+  #   # restart: on-failure
+  #   env_file:
+  #     - ./env_files/geoserver_rest.env
+  #   volumes:
+  #     - ../geoserver-rest:/usr/src/geoserver-rest
+  #   depends_on:
+  #     - pauliceia_geoserver
+  #   networks:
+  #     - pauliceia
+  #   ports:
+  #     - 3005:3000
 
   ##################################################
   # third party services - 400x
   ##################################################
 
   pauliceia_geoserver:
-    container_name: pauliceia_geoserver
+    container_name: pauliceia-geoserver
     image: kartoza/geoserver:2.19.2
-    restart: on-failure
+    # restart: on-failure
     volumes:
       - ./volumes/geoserver/geoserverdata:/opt/geoserver/data_dir
       # folder where raster files are
@@ -98,7 +114,7 @@ services:
     networks:
       - pauliceia
     depends_on:
-      - pauliceia_pgadmin4
+      - pauliceia_postgis
     ports:
       - 4000:8080
     healthcheck:
@@ -114,7 +130,7 @@ services:
   pauliceia_postgis:
     container_name: pauliceia_postgis
     image: kartoza/postgis:11.0-2.5
-    restart: on-failure
+    # restart: on-failure
     env_file:
       - ./env_files/postgis.env
     volumes:
@@ -124,16 +140,20 @@ services:
     ports:
       - 5000:5432
     healthcheck:
-        test: "exit 0"
+      test: "exit 0"
 
   pauliceia_pgadmin4:
     container_name: pauliceia_pgadmin4
-    image: dpage/pgadmin4:4.15
-    restart: on-failure
+    image: dpage/pgadmin4:6.0
+    # restart: on-failure
     env_file:
       - ./env_files/pgadmin4.env
     volumes:
+      # to fix permission bugs, use:
+      # sudo chown -R 5050:5050 pgadmin4 pgadmin4_storage
+      # sudo chmod -R o+rx pgadmin4_storage
       - ./volumes/pgadmin4:/var/lib/pgadmin
+      - ./volumes/pgadmin4_storage:/var/lib/pgadmin/storage
     networks:
       - pauliceia
     depends_on:
@@ -148,7 +168,7 @@ services:
   pauliceia_portainer:
     container_name: pauliceia_portainer
     image: portainer/portainer-ce:2.6.3
-    restart: on-failure
+    # restart: on-failure
     volumes:
       - portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
