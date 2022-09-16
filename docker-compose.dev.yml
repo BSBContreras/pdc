@@ -141,25 +141,24 @@ services:
       - 5000:5432
     healthcheck:
       test: "exit 0"
-
-  pauliceia_pgadmin4:
-    container_name: pauliceia_pgadmin4
-    image: dpage/pgadmin4:6.0
-    # restart: on-failure
-    env_file:
-      - ./env_files/pgadmin4.env
-    volumes:
-      # to fix permission bugs, use:
-      # sudo chown -R 5050:5050 pgadmin4 pgadmin4_storage
-      # sudo chmod -R o+rx pgadmin4_storage
-      - ./volumes/pgadmin4:/var/lib/pgadmin
-      - ./volumes/pgadmin4_storage:/var/lib/pgadmin/storage
-    networks:
-      - pauliceia
-    depends_on:
-      - pauliceia_postgis
-    ports:
-      - 5001:80
+  # pauliceia_pgadmin4:
+  #   container_name: pauliceia_pgadmin4
+  #   image: dpage/pgadmin4:6.0
+  #   # restart: on-failure
+  #   env_file:
+  #     - ./env_files/pgadmin4.env
+  #   volumes:
+  #     # to fix permission bugs, use:
+  #     # sudo chown -R 5050:5050 pgadmin4 pgadmin4_storage
+  #     # sudo chmod -R o+rx pgadmin4_storage
+  #     - ./volumes/pgadmin4:/var/lib/pgadmin
+  #     - ./volumes/pgadmin4_storage:/var/lib/pgadmin/storage
+  #   networks:
+  #     - pauliceia
+  #   depends_on:
+  #     - pauliceia_postgis
+  #   ports:
+  #     - 5001:80
   ##################################################
   # extra services - 900x
   ##################################################
@@ -177,10 +176,10 @@ services:
   #     - 9000:9000
   #     - 9001:8000
 
-volumes:
-  portainer_data:
+  # volumes:
+  #   portainer_data:
 
 
-networks:
-  pauliceia:
-    driver: bridge
+  # networks:
+  #   pauliceia:
+  #     driver: bridge
