@@ -5,46 +5,46 @@ services:
   # reverse proxy
   ##################################################
 
-  pauliceia_nginx:
-    container_name: pauliceia_nginx
-    image: nginx:1.21.1
-    # restart: on-failure
-    env_file:
-      - ./env_files/nginx.env
-    volumes:
-      - ./volumes/nginx/default.conf.template:/etc/nginx/templates/default.conf.template
-      - ./volumes/nginx/include:/etc/nginx/conf.d/include
-    networks:
-      - pauliceia
-    depends_on:
-      - pauliceia_portal
-      - pauliceia_portainer
-    ports:
-      - 8080:80
+  # pauliceia_nginx:
+  #   container_name: pauliceia_nginx
+  #   image: nginx:1.21.1
+  #   # restart: on-failure
+  #   env_file:
+  #     - ./env_files/nginx.env
+  #   volumes:
+  #     - ./volumes/nginx/default.conf.template:/etc/nginx/templates/default.conf.template
+  #     - ./volumes/nginx/include:/etc/nginx/conf.d/include
+  #   networks:
+  #     - pauliceia
+  #   depends_on:
+  #     - pauliceia_portal
+  #     - pauliceia_portainer
+  #   ports:
+  #     - 8080:80
 
   ##################################################
   # pauliceia services - 300x
   ##################################################
 
-  pauliceia_portal:
-    container_name: pauliceia_portal
-    image: pauliceia_portal
-    # restart: on-failure
-    volumes:
-      - ../pauliceia:/app
-      - ./volumes/pauliceia/dev.env.js:/app/config/dev.env.js
-      # below is an anonymous volume. it avoids node_modules directory be
-      # overwritten by the mounting above at runtime.
-      # Source: https://mherman.org/blog/dockerizing-a-vue-app/
-      - '/app/node_modules'
-    depends_on:
-      - pauliceia_vgimws
-      # - pauliceia_geocoding
-      - pauliceia_geoserver
-    networks:
-      - pauliceia
-    ports:
-      - 3000:8080
+  # pauliceia_portal:
+  #   container_name: pauliceia_portal
+  #   image: pauliceia_portal
+  #   # restart: on-failure
+  #   volumes:
+  #     - ../pauliceia:/app
+  #     - ./volumes/pauliceia/dev.env.js:/app/config/dev.env.js
+  #     # below is an anonymous volume. it avoids node_modules directory be
+  #     # overwritten by the mounting above at runtime.
+  #     # Source: https://mherman.org/blog/dockerizing-a-vue-app/
+  #     - '/app/node_modules'
+  #   depends_on:
+  #     - pauliceia_vgimws
+  #     # - pauliceia_geocoding
+  #     - pauliceia_geoserver
+  #   networks:
+  #     - pauliceia
+  #   ports:
+  #     - 3000:8080
 
   pauliceia_vgimws:
     container_name: pauliceia_vgimws
@@ -101,27 +101,27 @@ services:
   # third party services - 400x
   ##################################################
 
-  pauliceia_geoserver:
-    container_name: pauliceia-geoserver
-    image: kartoza/geoserver:2.19.2
-    # restart: on-failure
-    volumes:
-      - ./volumes/geoserver/geoserverdata:/opt/geoserver/data_dir
-      # folder where raster files are
-      - ${GEOSERVER_FILES_DIR}:/home/geoserveruser/files
-    env_file:
-      - ./env_files/geoserver.env
-    networks:
-      - pauliceia
-    depends_on:
-      - pauliceia_postgis
-    ports:
-      - 4000:8080
-    healthcheck:
-      test: curl --fail -s http://localhost:8080/ || exit 1
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
+  # pauliceia_geoserver:
+  #   container_name: pauliceia-geoserver
+  #   image: kartoza/geoserver:2.19.2
+  #   # restart: on-failure
+  #   volumes:
+  #     - ./volumes/geoserver/geoserverdata:/opt/geoserver/data_dir
+  #     # folder where raster files are
+  #     - ${GEOSERVER_FILES_DIR}:/home/geoserveruser/files
+  #   env_file:
+  #     - ./env_files/geoserver.env
+  #   networks:
+  #     - pauliceia
+  #   depends_on:
+  #     - pauliceia_postgis
+  #   ports:
+  #     - 4000:8080
+  #   healthcheck:
+  #     test: curl --fail -s http://localhost:8080/ || exit 1
+  #     interval: 1m30s
+  #     timeout: 10s
+  #     retries: 3
 
   ##################################################
   # pauliceia database - 500x
@@ -160,26 +160,26 @@ services:
       - pauliceia_postgis
     ports:
       - 5001:80
-
   ##################################################
   # extra services - 900x
   ##################################################
 
-  pauliceia_portainer:
-    container_name: pauliceia_portainer
-    image: portainer/portainer-ce:2.6.3
-    # restart: on-failure
-    volumes:
-      - portainer_data:/data
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - pauliceia
-    ports:
-      - 9000:9000
-      - 9001:8000
+  # pauliceia_portainer:
+  #   container_name: pauliceia_portainer
+  #   image: portainer/portainer-ce:2.6.3
+  #   # restart: on-failure
+  #   volumes:
+  #     - portainer_data:/data
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   networks:
+  #     - pauliceia
+  #   ports:
+  #     - 9000:9000
+  #     - 9001:8000
 
 volumes:
   portainer_data:
+
 
 networks:
   pauliceia:
